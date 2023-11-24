@@ -207,7 +207,7 @@ class MatchInfo {
   int? currBatTeamId;
   String seriesStartDt;
   String seriesEndDt;
-  bool isTimeAnnounced;
+  bool? isTimeAnnounced;
   String stateTitle;
   bool? isFantasyEnabled;
 
@@ -227,7 +227,7 @@ class MatchInfo {
     this.currBatTeamId,
     required this.seriesStartDt,
     required this.seriesEndDt,
-    required this.isTimeAnnounced,
+    this.isTimeAnnounced,
     required this.stateTitle,
     this.isFantasyEnabled,
   });
@@ -316,7 +316,7 @@ class VenueInfo {
   int id;
   String ground;
   String city;
-  String timezone;
+  Timezone timezone;
   String latitude;
   String longitude;
 
@@ -333,7 +333,7 @@ class VenueInfo {
         id: json["id"],
         ground: json["ground"],
         city: json["city"],
-        timezone: json["timezone"],
+        timezone: timezoneValues.map[json["timezone"]]!,
         latitude: json["latitude"],
         longitude: json["longitude"],
       );
@@ -342,11 +342,37 @@ class VenueInfo {
         "id": id,
         "ground": ground,
         "city": city,
-        "timezone": timezone,
+        "timezone": timezoneValues.reverse[timezone],
         "latitude": latitude,
         "longitude": longitude,
       };
 }
+
+enum Timezone {
+  THE_0100,
+  THE_0200,
+  THE_0300,
+  THE_0400,
+  THE_0530,
+  THE_0800,
+  THE_1000,
+  THE_1030,
+  THE_1100,
+  TIMEZONE_0300
+}
+
+final timezoneValues = EnumValues({
+  "+01:00": Timezone.THE_0100,
+  "+02:00": Timezone.THE_0200,
+  "+03:00": Timezone.THE_0300,
+  "+04:00": Timezone.THE_0400,
+  "+05:30": Timezone.THE_0530,
+  "+08:00": Timezone.THE_0800,
+  "+10:00": Timezone.THE_1000,
+  "+10:30": Timezone.THE_1030,
+  "+11:00": Timezone.THE_1100,
+  "-03:00": Timezone.TIMEZONE_0300
+});
 
 class MatchScore {
   TeamScore team1Score;
@@ -371,21 +397,21 @@ class MatchScore {
 }
 
 class TeamScore {
-  Inngs? inngs1;
+  Inngs inngs1;
   Inngs? inngs2;
 
   TeamScore({
-    this.inngs1,
+    required this.inngs1,
     this.inngs2,
   });
 
   factory TeamScore.fromJson(Map<String, dynamic> json) => TeamScore(
-        inngs1: json["inngs1"] == null ? null : Inngs.fromJson(json["inngs1"]),
+        inngs1: Inngs.fromJson(json["inngs1"]),
         inngs2: json["inngs2"] == null ? null : Inngs.fromJson(json["inngs2"]),
       );
 
   Map<String, dynamic> toJson() => {
-        "inngs1": inngs1?.toJson(),
+        "inngs1": inngs1.toJson(),
         "inngs2": inngs2?.toJson(),
       };
 }
@@ -393,7 +419,7 @@ class TeamScore {
 class Inngs {
   int inningsId;
   int runs;
-  int? wickets;
+  int wickets;
   double overs;
   bool? isDeclared;
   bool? isFollowOn;
@@ -401,7 +427,7 @@ class Inngs {
   Inngs({
     required this.inningsId,
     required this.runs,
-    this.wickets,
+    required this.wickets,
     required this.overs,
     this.isDeclared,
     this.isFollowOn,
